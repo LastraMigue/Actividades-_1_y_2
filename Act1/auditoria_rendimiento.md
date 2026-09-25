@@ -57,3 +57,44 @@ Dado que he realizado esta prueba en un navegador basado en Chromium (como Googl
 - **SpiderMonkey (Mozilla Firefox)**: El motor histórico de Mozilla, dotado de su propia arquitectura de compilación JIT multinivel (WarpMonkey).
 
 A pesar de las diferencias de arquitectura entre V8, JavaScriptCore y SpiderMonkey, todos ellos comparten la necesidad de aplicar compilación JIT para procesar la enorme carga de scripts que requiere una web CSR como YouTube.
+
+## 3. El Sandbox en acción: Límites de Seguridad
+
+En esta tercera prueba he analizado las restricciones de ejecución de scripts y el aislamiento de seguridad que impone el navegador, utilizando para ello la pestaña Console (Consola) de las DevTools sobre la página de YouTube.
+
+### Ejecución de código en memoria vs. Intento de acceso al disco duro
+
+En primer lugar, ejecuté una instrucción inofensiva de declaración de variable e impresión en memoria:
+
+```javascript
+const a = "eoo"; console.log(a);
+```
+
+El motor procesó la instrucción inmediatamente imprimiendo el resultado "eoo", ya que se trata de una operación básica acotada únicamente a la memoria volátil del hilo de ejecución.
+
+A continuación, simulé una acción maliciosa intentando instanciar la API FileReader para leer directamente un archivo sensible del sistema operativo (C:/Windows/system.ini) pasando la ruta como texto plano:
+
+```javascript
+const r = new FileReader();
+r.readAsText("C:/Windows/system.ini");
+r.onload = function(){ console.log(r.result); }
+```
+
+![image6](./resources/image6.png)
+
+### Análisis del error y limitaciones del Sandbox
+
+Al ejecutar el script de lectura, el motor bloqueó la acción de inmediato lanzando el error de tipo:
+
+```text
+VM4904:2 Uncaught TypeError: Failed to execute 'readAsText' on 'FileReader': parameter 1 is not of type 'Blob'.
+```
+
+Este comportamiento evidencia el funcionamiento del Sandbox (caja de arena) del navegador y sus mecanismos de protección:
+
+- **Consentimiento explícito del usuario**: La API FileReader no acepta rutas absolutas en texto plano por motivos de seguridad. Exige obligatoriamente un objeto de tipo Blob o File, el cual únicamente se puede obtener si el usuario selecciona de forma explícita y voluntaria un archivo a través de un componente `<input type="file">` o arrastrándolo a la página.
+- **Aislamiento de recursos (I/O del sistema)**: El Sandbox impide que el código JavaScript ejecutado dentro de la pestaña del navegador pueda realizar llamadas directas al sistema de archivos local o acceder a la memoria del sistema operativo.
+
+### Importancia vital del Sandbox para el usuario
+
+El Sandbox es el pilar fundamental de la seguridad en la web moderna. Si esta barrera de aislamiento no existiera, cualquier sitio web que visitáramos (como YouTube o cualquier página de terceros) podría ejecutar scripts en segundo plano para explorar nuestro disco duro, exfiltrar datos personales, leer claves privadas, extraer contraseñas guardadas o infectar el sistema operativo sin interacción ni permiso previo del usuario.
