@@ -5,3 +5,4 @@ Este repositorio contiene la resolución de las Actividades 1 y 2, centradas en 
 ## Descripción de las Actividades
 
 - **[Actividad 1: Laboratorio de Auditoría y Rendimiento Web](./Act1/auditoria_rendimiento.md)**: En esta actividad se realiza una auditoría de red (análisis cliente/servidor) para determinar la arquitectura de renderizado, seguida de un análisis de rendimiento utilizando las DevTools del navegador para estudiar el hilo principal y el motor JavaScript.
+- **[Actividad 2: Análisis Empírico de Integración de Scripts ("Duelo de la Integración")](./Act2/duelo_integracion.md)**: Este informe documenta el impacto en el rendimiento, el orden de ejecución y la disponibilidad del DOM al utilizar cinco estrategias distintas de integración de JavaScript (Escenarios A–E) en un entorno local.
