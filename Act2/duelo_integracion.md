@@ -70,10 +70,10 @@ Los módulos JavaScript (`type="module"`) adoptan un comportamiento diferido (`d
 
 ## 6. Cuadro Comparativo de Resultados
 
-| Escenario | Estrategia de Carga | Acceso al DOM | Orden Garantizado | Impacto en First Paint (FP) | Ámbito de Ejecución |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| A | `<script>` en `<head>` | Falla | Sí (1 -> 2 -> 3) | Severo (Pantalla en blanco) | Global (window) |
-| B | `<script>` en `<body>` | Éxito | Sí (1 -> 2 -> 3) | Mínimo (Muestra HTML base) | Global (window) |
-| C | `<script async>` | Falla / Inestable | No determinista | Medio (Descarga paralela, interrumpe parseo) | Global (window) |
-| D | `<script defer>` | Éxito | Sí (1 -> 2 -> 3) | Óptimo (Descarga paralela, ejecuta post-DOM) | Global (window) |
-| E | `<script type="module">` | Éxito | Sí (1 -> 2 -> 3) | Óptimo (Diferido implícito) | Módulo local (Aislado) |
+| Escenario | Estrategia de Carga | Acceso al DOM | Orden Garantizado | Ámbito de Ejecución |
+| :--- | :--- | :--- | :--- | :--- |
+| A | `<script>` en `<head>` | Falla | Sí (1 -> 2 -> 3) | Global (window) |
+| B | `<script>` en `<body>` | Éxito | Sí (1 -> 2 -> 3) | Global (window) |
+| C | `<script async>` | Falla / Inestable | No determinista | Global (window) |
+| D | `<script defer>` | Éxito | Sí (1 -> 2 -> 3) | Global (window) |
+| E | `<script type="module">` | Éxito | Sí (1 -> 2 -> 3) | Módulo local (Aislado) |
