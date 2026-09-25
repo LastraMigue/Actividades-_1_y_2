@@ -98,3 +98,33 @@ Este comportamiento evidencia el funcionamiento del Sandbox (caja de arena) del 
 ### Importancia vital del Sandbox para el usuario
 
 El Sandbox es el pilar fundamental de la seguridad en la web moderna. Si esta barrera de aislamiento no existiera, cualquier sitio web que visitáramos (como YouTube o cualquier página de terceros) podría ejecutar scripts en segundo plano para explorar nuestro disco duro, exfiltrar datos personales, leer claves privadas, extraer contraseñas guardadas o infectar el sistema operativo sin interacción ni permiso previo del usuario.
+
+## 4. Análisis de Bloqueo y Asincronía en el Scripting Web
+
+En este cuarto apartado de la auditoría sobre YouTube, he analizado el impacto en la experiencia de usuario que tendría la carga de scripts de gran volumen si se procesaran mediante el modelo de programación síncrono tradicional, en lugar de utilizar el modelo asíncrono orientado a eventos propio de la web moderna.
+
+### Identificación del script pesado (>1MB)
+
+Al inspeccionar el tráfico de red en la pestaña Network de las DevTools filtrando por archivos JS y ordenándolos por tamaño, he localizado el script principal de infraestructura de la plataforma, denominado `base.js`.
+
+Este archivo presenta un tamaño de 2.598 kB (aproximadamente 2,6 MB en memoria), superando holgadamente el umbral de 1 MB establecido para el análisis.
+
+![image7](./resources/image7.png)
+
+### Escenario Síncrono Tradicional: El problema del bloqueo (Blocking)
+
+En la programación síncrona tradicional, la ejecución del código sigue una secuencia estrictamente lineal. Si un recurso de este volumen como `base.js` (~2,6 MB) se cargase de manera síncrona mediante una etiqueta `<script>` convencional:
+
+- **Bloqueo del Parser HTML**: El navegador detendría inmediatamente el análisis del documento y la construcción del árbol DOM al encontrar la etiqueta del script.
+- **Descarga y Compilación Bloqueante**: El hilo principal (Main Thread) del navegador quedaría completamente congelado esperando la descarga completa del archivo a través de la red y su posterior fase de parseo y compilación JIT.
+- **Impacto devastador en la UX**: Durante todo el tiempo que el hilo principal permanezca bloqueado, el navegador no podría pintar ningún elemento en pantalla (Render Blocking). El usuario experimentaría una pantalla en blanco (White Screen of Death), la interfaz no respondería a clics ni a desplazamientos (scroll), e incluso el navegador podría desplegar el aviso de "Página no responde".
+
+### Ventajas de la Asincronía y el Modelo Orientado a Eventos
+
+La web moderna y arquitecturas como la de YouTube evitan este bloqueo crítico gracias al bucle de eventos (Event Loop) y al procesamiento asíncrono:
+
+- **Carga No Bloqueante (async / defer y Fetch/Promises)**: Los scripts pesados como `base.js` se descargan en segundo plano mientras el navegador continúa procesando el HTML y renderizando la estructura visual de la página.
+- **Event Loop y Tareas Asíncronas**: El procesamiento del código JavaScript no se ejecuta de un solo golpe, sino que se divide en pequeñas tareas que se introducen en la cola del Event Loop. Esto permite que el motor alterne la ejecución del código con el redibujado de la pantalla (Repaint) y la atención inmediata a los eventos del usuario (clics, teclado, scroll).
+- **Interfaz Interactiva Inmediata**: Gracias a la asincronía, el usuario puede empezar a ver contenido en YouTube e interactuar con la interfaz en cuestión de milisegundos, sin necesidad de esperar a que finalice la descarga y procesamiento completo de los 2,6 MB de código en segundo plano.
+
+En conclusión, la asincronía y la arquitectura orientada a eventos son indispensables para la viabilidad de aplicaciones web complejas, transformando scripts masivos que de otro modo congelarían el navegador en recursos que se procesan de forma fluida sin degradar la experiencia de usuario.
