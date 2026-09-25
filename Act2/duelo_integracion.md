@@ -6,8 +6,8 @@ Este informe documenta el impacto en el rendimiento, el orden de ejecución y la
 
 ### Evidencia Visual
 * **Captura 1.1 - Consola:** ![Captura 1.1 - Consola](./resources/image8.png) Muestra el mensaje Error: El DOM aún no se ha construido en los tres scripts.
-* **Captura 1.2 - Network (Filtro Doc):** ![Captura 1.2 - Network (Filtro Doc)](./resources/image9.png) Descarga del documento index.html.
-* **Captura 1.3 - Network (Filtro JS):** ![Captura 1.3 - Network (Filtro JS)](./resources/image10.png) Solicitud secuencial y bloqueante de script1.js, script2.js y script3.js.
+* **Captura 1.2 - Network (Filtro Doc):** ![Captura 1.2 - Network (Filtro Doc)](./resources/image10.png) Descarga del documento index.html.
+* **Captura 1.3 - Network (Filtro JS):** ![Captura 1.3 - Network (Filtro JS)](./resources/image9.png) Solicitud secuencial y bloqueante de script1.js, script2.js y script3.js.
 * **Captura 1.4 - Performance:** ![Captura 1.4 - Performance](./resources/image11.png) Bloque Evaluate Script amarillo de larga duración situado antes de la marca de First Paint (FP).
 
 ### Análisis Técnico
@@ -19,8 +19,8 @@ Al ubicar los scripts síncronos dentro del `<head>`, el navegador interrumpe la
 
 ### Evidencia Visual
 * **Captura 2.1 - Consola:** ![Captura 2.1 - Consola](./resources/image12.png) Registros de Inicio y Éxito secuenciales (1 -> 2 -> 3). Texto final del DOM: "Cambiado por Script 3".
-* **Captura 2.2 - Network (Filtro Doc):** ![Captura 2.2 - Network (Filtro Doc)](./resources/image13.png) Carga completa del HTML previa a la descarga de scripts.
-* **Captura 2.3 - Network (Filtro JS):** ![Captura 2.3 - Network (Filtro JS)](./resources/image14.png) Solicitud de scripts iniciada únicamente tras completar el parseo del cuerpo del documento.
+* **Captura 2.2 - Network (Filtro Doc):** ![Captura 2.2 - Network (Filtro Doc)](./resources/image14.png) Carga completa del HTML previa a la descarga de scripts.
+* **Captura 2.3 - Network (Filtro JS):** ![Captura 2.3 - Network (Filtro JS)](./resources/image13.png) Solicitud de scripts iniciada únicamente tras completar el parseo del cuerpo del documento.
 * **Captura 2.4 - Performance:** ![Captura 2.4 - Performance](./resources/image15.png) La marca First Paint ocurre tempranamente, seguida de la ejecución del bloque de scripts.
 
 ### Análisis Técnico
@@ -32,8 +32,8 @@ Colocar las etiquetas `<script>` justo antes del cierre de `</body>` garantiza q
 
 ### Evidencia Visual
 * **Captura 3.1 - Consola:** ![Captura 3.1 - Consola](./resources/image16.png) Ejecución asíncrona. Muestra alteración en el orden de los logs o resoluciones de DOM condicionadas por el tiempo de descarga.
-* **Captura 3.2 - Network (Filtro Doc):** ![Captura 3.2 - Network (Filtro Doc)](./resources/image17.png) Parseo del documento base.
-* **Captura 3.3 - Network (Filtro JS):** ![Captura 3.3 - Network (Filtro JS)](./resources/image18.png) Solicitudes HTTP de los tres archivos enviadas en paralelo.
+* **Captura 3.2 - Network (Filtro Doc):** ![Captura 3.2 - Network (Filtro Doc)](./resources/image18.png) Parseo del documento base.
+* **Captura 3.3 - Network (Filtro JS):** ![Captura 3.3 - Network (Filtro JS)](./resources/image17.png) Solicitudes HTTP de los tres archivos enviadas en paralelo.
 * **Captura 3.4 - Performance:** ![Captura 3.4 - Performance](./resources/image19.png) Tareas Evaluate Script incrustadas de forma intermitente interrumpiendo el flujo de Parse HTML.
 
 ### Análisis Técnico
@@ -45,8 +45,8 @@ El atributo `async` descarga los scripts en segundo plano sin pausar la lectura 
 
 ### Evidencia Visual
 * **Captura 4.1 - Consola:** ![Captura 4.1 - Consola](./resources/image20.png) Salida limpia y ordenada (1 -> 2 -> 3) con mensajes de éxito. Resultado en pantalla: "Cambiado por Script 3".
-* **Captura 4.2 - Network (Filtro Doc):** ![Captura 4.2 - Network (Filtro Doc)](./resources/image21.png) Petición del HTML inicial.
-* **Captura 4.3 - Network (Filtro JS):** ![Captura 4.3 - Network (Filtro JS)](./resources/image22.png) Descarga paralela e inmediata de los tres scripts en segundo plano.
+* **Captura 4.2 - Network (Filtro Doc):** ![Captura 4.2 - Network (Filtro Doc)](./resources/image22.png) Petición del HTML inicial.
+* **Captura 4.3 - Network (Filtro JS):** ![Captura 4.3 - Network (Filtro JS)](./resources/image21.png) Descarga paralela e inmediata de los tres scripts en segundo plano.
 * **Captura 4.4 - Performance:** ![Captura 4.4 - Performance](./resources/image23.png) First Paint inmediato; bloques Evaluate Script ejecutados en secuencia justo antes de la línea de DOMContentLoaded (DCL).
 
 ### Análisis Técnico
@@ -58,8 +58,8 @@ El atributo `defer` combina la descarga asíncrona (en paralelo) con la ejecuci�
 
 ### Evidencia Visual
 * **Captura 5.1 - Consola:** ![Captura 5.1 - Consola](./resources/image24.png) Ejecución correcta y ordenada (1 -> 2 -> 3) idéntica a defer, sin colisiones de variables globales.
-* **Captura 5.2 - Network (Filtro Doc):** ![Captura 5.2 - Network (Filtro Doc)](./resources/image25.png) Carga del documento a través del protocolo http://localhost.
-* **Captura 5.3 - Network (Filtro JS):** ![Captura 5.3 - Network (Filtro JS)](./resources/image26.png) Solicitud HTTP de módulos ES6 bajo la política CORS del servidor.
+* **Captura 5.2 - Network (Filtro Doc):** ![Captura 5.2 - Network (Filtro Doc)](./resources/image26.png) Carga del documento a través del protocolo http://localhost.
+* **Captura 5.3 - Network (Filtro JS):** ![Captura 5.3 - Network (Filtro JS)](./resources/image25.png) Solicitud HTTP de módulos ES6 bajo la política CORS del servidor.
 * **Captura 5.4 - Performance:** ![Captura 5.4 - Performance](./resources/image27.png) Marcador First Paint rápido con ejecución diferida ordenada antes de DOMContentLoaded.
 
 ### Análisis Técnico y Comportamiento de Módulos ES6
